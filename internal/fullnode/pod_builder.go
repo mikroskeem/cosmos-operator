@@ -9,6 +9,7 @@ import (
 
 	"github.com/samber/lo"
 	cosmosv1 "github.com/strangelove-ventures/cosmos-operator/api/v1"
+	"github.com/strangelove-ventures/cosmos-operator/internal/fullnode/commands"
 	"github.com/strangelove-ventures/cosmos-operator/internal/healthcheck"
 	"github.com/strangelove-ventures/cosmos-operator/internal/kube"
 	"github.com/strangelove-ventures/cosmos-operator/internal/version"
@@ -42,7 +43,7 @@ func NewPodBuilder(crd *cosmosv1.CosmosFullNode) PodBuilder {
 
 	var (
 		tpl                 = crd.Spec.PodTemplate
-		startCmd, startArgs = startCmdAndArgs(crd)
+		startCmd, startArgs = commands.StartCmdAndArgs(crd, ChainHomeDir(crd))
 		probes              = podReadinessProbes(crd)
 	)
 
@@ -313,9 +314,9 @@ func envVars(crd *cosmosv1.CosmosFullNode) []corev1.EnvVar {
 
 func initContainers(crd *cosmosv1.CosmosFullNode, moniker string) []corev1.Container {
 	tpl := crd.Spec.PodTemplate
-	initCmd, initArgs := InitCommand(crd.Spec.ChainSpec, moniker)
-	genesisCmd, genesisArgs := DownloadGenesisCommand(crd.Spec.ChainSpec)
-	addrbookCmd, addrbookArgs := DownloadAddrbookCommand(crd.Spec.ChainSpec)
+	initCmd, initArgs := commands.InitCommand(crd.Spec.ChainSpec, moniker)
+	genesisCmd, genesisArgs := commands.DownloadGenesisCommand(crd.Spec.ChainSpec)
+	addrbookCmd, addrbookArgs := commands.DownloadAddrbookCommand(crd.Spec.ChainSpec)
 	env := envVars(crd)
 
 	if len(crd.Spec.ChainSpec.AdditionalInitArgs) > 0 {
@@ -395,7 +396,7 @@ func initContainers(crd *cosmosv1.CosmosFullNode, moniker string) []corev1.Conta
 	}
 
 	if willRestoreFromSnapshot(crd) {
-		cmd, args := DownloadSnapshotCommand(crd.Spec.ChainSpec)
+		cmd, args := commands.DownloadSnapshotCommand(crd.Spec.ChainSpec)
 		required = append(required, corev1.Container{
 			Name:            "snapshot-restore",
 			Image:           infraToolImage,
