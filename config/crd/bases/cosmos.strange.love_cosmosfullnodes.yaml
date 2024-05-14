@@ -330,6 +330,9 @@ spec:
                       if the snapshot archive is unconventional or requires special
                       handling.'
                     type: string
+                  startScript:
+                    description: Specify shell (sh) script commands to start the chain
+                    type: string
                   versions:
                     description: Versions of the chain and which height they should
                       be applied. When provided, the operator will automatically upgrade
