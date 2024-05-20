@@ -358,6 +358,23 @@ spec:
                 - chainID
                 - network
                 type: object
+              extraPorts:
+                items:
+                  properties:
+                    name:
+                      type: string
+                    port:
+                      description: The port that will be exposed by this service.
+                      format: int32
+                      type: integer
+                    protocol:
+                      default: TCP
+                      type: string
+                  required:
+                  - name
+                  - port
+                  type: object
+                type: array
               instanceOverrides:
                 additionalProperties:
                   description: InstanceOverridesSpec allows overriding an instance

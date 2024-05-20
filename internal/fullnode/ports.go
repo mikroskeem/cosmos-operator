@@ -16,16 +16,25 @@ const (
 	rpcPort     = 26657
 )
 
-func buildPorts(nodeType cosmosv1.FullNodeType) []corev1.ContainerPort {
+func buildPorts(nodeType cosmosv1.FullNodeType, extraPorts []cosmosv1.ExtraPortSpec) []corev1.ContainerPort {
+	var extraContainerPorts []corev1.ContainerPort
+	for _, extra := range extraPorts {
+		extraContainerPorts = append(extraContainerPorts, corev1.ContainerPort{
+			Name:          extra.Name,
+			ContainerPort: extra.Port,
+			Protocol:      *extra.Protocol,
+		})
+	}
+
 	switch nodeType {
 	case cosmosv1.Sentry:
-		return append(defaultPorts[:], corev1.ContainerPort{
+		return append(append(defaultPorts[:], corev1.ContainerPort{
 			Name:          "privval",
 			ContainerPort: privvalPort,
 			Protocol:      corev1.ProtocolTCP,
-		})
+		}), extraContainerPorts...)
 	default:
-		return defaultPorts[:]
+		return append(defaultPorts[:], extraContainerPorts...)
 	}
 }
 

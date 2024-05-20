@@ -117,6 +117,15 @@ func rpcService(crd *cosmosv1.CosmosFullNode) *corev1.Service {
 		},
 	}
 
+	for _, extra := range crd.Spec.ExtraPorts {
+		svc.Spec.Ports = append(svc.Spec.Ports, corev1.ServicePort{
+			Name:       extra.Name,
+			Protocol:   *extra.Protocol,
+			Port:       extra.Port,
+			TargetPort: intstr.FromInt(int(extra.Port)),
+		})
+	}
+
 	svc.Spec.Selector = map[string]string{kube.NameLabel: appName(crd)}
 	svc.Spec.Type = corev1.ServiceTypeClusterIP
 

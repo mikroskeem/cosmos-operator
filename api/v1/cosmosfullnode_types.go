@@ -93,6 +93,20 @@ type FullNodeSpec struct {
 	// complexity of the CosmosFullNodeController.
 	// +optional
 	SelfHeal *SelfHealSpec `json:"selfHeal"`
+
+	// +optional
+	ExtraPorts []ExtraPortSpec `json:"extraPorts"`
+}
+
+type ExtraPortSpec struct {
+	Name string `json:"name"`
+
+	// +default="TCP"
+	// +optional
+	Protocol *corev1.Protocol `json:"protocol,omitempty"`
+
+	// The port that will be exposed by this service.
+	Port int32 `json:"port"`
 }
 
 type FullNodeType string
