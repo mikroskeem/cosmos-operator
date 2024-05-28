@@ -84,7 +84,7 @@ func NewPodBuilder(crd *cosmosv1.CosmosFullNode) PodBuilder {
 					Command:         []string{startCmd},
 					Args:            startArgs,
 					Env:             envVars(crd),
-					Ports:           buildPorts(crd.Spec.Type),
+					Ports:           buildPorts(crd.Spec.Type, crd.Spec.ExtraPorts),
 					Resources:       tpl.Resources,
 					ReadinessProbe:  probes[0],
 					ImagePullPolicy: tpl.ImagePullPolicy,
